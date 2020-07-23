@@ -38,7 +38,7 @@ public class AsheBot {
 //        DBCursor cursor = users.find(query);
 //        DBObject one = cursor.one();
 //        System.out.println((String)one.get("lvl"));
-        jda = new JDABuilder(AccountType.BOT).setToken("NzM0NTQyNjIwMzE1MDkxMDg2.XxTOUQ.-IHVpRrNvhbqwLxfUwsD2qMW7LA").build();
+        jda = new JDABuilder(AccountType.BOT).setToken("TOKEN").build();
         jda.getPresence().setStatus(OnlineStatus.ONLINE);
         jda.getPresence().setActivity(Activity.playing("WATCHING OVER ASHE!!"));
         jda.addEventListener(new allCommand());
