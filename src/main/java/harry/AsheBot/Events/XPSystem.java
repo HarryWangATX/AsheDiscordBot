@@ -19,18 +19,23 @@ public class XPSystem extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
         String[] args = event.getMessage().getContentRaw().split(" ");
 
-        System.out.println(AsheBot.users.find().count());
+        //System.out.println(AsheBot.users.find().one());
 
         DBObject query = new BasicDBObject("memberID", event.getMember().getId());
         DBCursor cursor = AsheBot.users.find(query);
-        System.out.println(cursor.count());
+        //System.out.println(cursor.count());
         if(cursor.count() == 0){
             User newUser = new User();
+            newUser.setAfk("");
+            newUser.setMemberID(event.getMember().getId());
+            newUser.setXp(0);
+            newUser.setTimer(1);
             AsheBot.users.insert(AsheBot.convert(newUser));
         }
-        else{
+        else if (canGetXP(event.getMember())){
             assert event.getMember() != null;
             setXP(event.getMember());
+            setTimer(event.getMember().getId());
         }
 
         if(args[0].equalsIgnoreCase("~XP")){
@@ -54,39 +59,56 @@ public class XPSystem extends ListenerAdapter {
         return (int)cursor.one().get("XP");
     }
 
-//    public int getTimer(String memberID){
-//        String id = memberID;
-//        DBObject query = new BasicDBObject("memberID", id);
-//        DBCursor cursor = AsheBot.users.find(query);
-//        return (int)cursor.one().get("timer");
-//    }
+    public int getTimer(String memberID){
+        String id = memberID;
+        DBObject query = new BasicDBObject("memberID", id);
+        DBCursor cursor = AsheBot.users.find(query);
+        return (int)cursor.one().get("Timer");
+    }
 
     public void setXP(Member member){
         String id = member.getId();
         DBObject query = new BasicDBObject("memberID", id);
         DBCursor cursor = AsheBot.users.find(query);
         int newXp = (int)cursor.one().get("XP") + randXP();
-        //TODO
-        //AsheBot.users.findAndModify(query, );
+        User temp = new User();
+        temp.setMemberID(id);
+        temp.setAfk((String)cursor.one().get("AFK"));
+        temp.setXp(newXp);
+        temp.setTimer((int)cursor.one().get("Timer"));
+        AsheBot.users.findAndModify(query, AsheBot.convert(temp));
     }
 
-//    public void setTimer(String memberID, int time){
-//        String id = memberID;
-//        DBObject query = new BasicDBObject("memberID", id);
-//        DBCursor cursor = AsheBot.users.find(query);
-//        User user = (User)cursor.one().get("User");
-//        user.setTimer(time);
-//        AsheBot.users.findAndModify(query, AsheBot.convert(user));
-//    }
+    public void setTimer(String memberID){
+        String id = memberID;
+        DBObject query = new BasicDBObject("memberID", id);
+        DBCursor cursor = AsheBot.users.find(query);
+        User temp = new User();
+        temp.setMemberID(memberID);
+        temp.setAfk((String)cursor.one().get("AFK"));
+        temp.setXp((int)cursor.one().get("XP"));
+        temp.setTimer(0);
+        AsheBot.users.findAndModify(query, AsheBot.convert(temp));
+        new java.util.Timer().schedule(
+                new java.util.TimerTask(){
+                    public void run(){
+                        temp.setTimer(1);
+                        AsheBot.users.findAndModify(query, AsheBot.convert(temp));
+                        //System.out.println("Modified");
+                    }
+                },
+                60*1000
+        );
+    }
 
     public int randXP(){
         Random r = new Random();
-        return r.nextInt(3);
+        return r.nextInt(5)+5;
     }
 
-//    public boolean canGetXP(Member member){
-//        return getTimer(member.getId()) == 0;
-//    }
+    public boolean canGetXP(Member member){
+        return getTimer(member.getId()) == 1;
+    }
 //
 //    public void startTimer(){
 //        Timer timer = new Timer();

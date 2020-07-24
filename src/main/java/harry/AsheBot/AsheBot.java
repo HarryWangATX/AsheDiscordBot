@@ -53,6 +53,6 @@ public class AsheBot {
     }
     public static DBObject convert(User user){
         //System.out.println("adsfsdf");
-        return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID());
+        return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID()).append("Timer", user.getTimer());
     }
 }
