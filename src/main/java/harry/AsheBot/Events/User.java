@@ -6,10 +6,13 @@ import com.mongodb.DBObject;
 import net.dv8tion.jda.api.entities.Member;
 
 public class User {
-    public int xp;
-    public int timer;
+    public int xp=0;
+    public int timer=0;
     public String afk = "";
-    public String MemberID;
+    public String MemberID="";
+    public User(){
+
+    }
     public int getXp() {
         return xp;
     }

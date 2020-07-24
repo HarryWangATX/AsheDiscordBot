@@ -76,7 +76,7 @@ public class allCommand extends ListenerAdapter {
             }
             else{
                 Member member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
-                Role role = event.getGuild().getRoleById("735006898943819818");
+                Role role = event.getGuild().getRoleById("707362535090814997");
                 assert member != null;
                 if(member.getRoles().contains(role)){
                     assert role != null;
@@ -93,7 +93,7 @@ public class allCommand extends ListenerAdapter {
         //muting command
         if(args[0].equalsIgnoreCase("~mute")){
 
-            Role role = event.getGuild().getRoleById("735006898943819818");
+            Role role = event.getGuild().getRoleById("707362535090814997");
             if(args.length == 2){
                 Member member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
                 assert member != null;
