@@ -1,11 +1,8 @@
 package harry.AsheBot;
 
 import com.mongodb.*;
-import harry.AsheBot.Events.GuildMemberJoin;
-import harry.AsheBot.Events.GuildMemberLeave;
-import harry.AsheBot.Events.GuildMessageReactionAdd;
+import harry.AsheBot.Events.*;
 import harry.AsheBot.Commands.allCommand;
-import harry.AsheBot.Events.User;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -25,11 +22,10 @@ public class AsheBot {
         mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         database = mongoClient.getDB("AsheUsers");
         users = database.getCollection("User");
-//        User test = new User();
-//        test.setAfk("Hello");
-//        test.setLvl(0);
-//        test.setReq(123);
-//        test.setXp(3124123);
+//       User test = new User();
+//       test.setAfk("Hello");
+//       test.setXp(3124123);
+//       test.setMemberID("2314132412341");
 //        //users.insert(convert(test));
 //        DBObject query = new BasicDBObject("lvl", 0);
 //        users.findAndRemove(query);
@@ -38,6 +34,13 @@ public class AsheBot {
 //        DBCursor cursor = users.find(query);
 //        DBObject one = cursor.one();
 //        System.out.println((String)one.get("lvl"));
+//        DBObject converted = convert(test);
+//        System.out.println("adsfsdf");
+//        users.insert(converted);
+//        DBObject query = new BasicDBObject();
+//        DBCursor cursor = users.find();
+//        users.findAndRemove(query);
+//        System.out.println(cursor.count());
         jda = new JDABuilder(AccountType.BOT).setToken("TOKEN").build();
         jda.getPresence().setStatus(OnlineStatus.ONLINE);
         jda.getPresence().setActivity(Activity.playing("WATCHING OVER ASHE!!"));
@@ -45,9 +48,11 @@ public class AsheBot {
         jda.addEventListener(new GuildMemberJoin());
         jda.addEventListener(new GuildMemberLeave());
         jda.addEventListener(new GuildMessageReactionAdd());
+        jda.addEventListener(new XPSystem());
         //jda.addEventListener(new GuildMessageReceive());
     }
     public static DBObject convert(User user){
-        return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID()).append("User", user).append("timer", user.getTimer());
+        //System.out.println("adsfsdf");
+        return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID());
     }
 }
