@@ -45,9 +45,14 @@ public class XPSystem extends ListenerAdapter {
             }
             else if(args.length == 2){
                 Member member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
-                assert member != null;
-                String xp = getXp(member)+"";
-                event.getChannel().sendMessage("Here is " + args[1] + "'s XP: " + xp).queue();
+                DBObject memQuery = new BasicDBObject("memberID", member.getId());
+                DBCursor cursor1 = AsheBot.users.find(memQuery);
+                if(cursor1.count() == 0) event.getChannel().sendMessage("Tell your friend to start messaging!").queue();
+                else{
+                    String xp = getXp(member)+"";
+                    event.getChannel().sendMessage("Here is " + args[1] + "'s XP: " + xp).queue();
+                }
+
             }
         }
     }
