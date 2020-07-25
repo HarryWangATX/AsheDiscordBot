@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import harry.AsheBot.AsheBot;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -41,16 +42,38 @@ public class XPSystem extends ListenerAdapter {
         if(args[0].equalsIgnoreCase("~XP")){
             if(args.length == 1){
                 String xp = getXp(event.getMember())+"";
-                event.getChannel().sendMessage("Here is ur XP: " + xp).queue();
+                EmbedBuilder xpInfo = new EmbedBuilder();
+                xpInfo.setColor(0x000000);
+                xpInfo.setTitle(event.getMember().getNickname() + "'s XP in Ashe!");
+                xpInfo.setDescription(event.getMember().getAsMention() + " you have: " + xp + " points!\nKeep sending messages!");
+                xpInfo.setFooter("Enjoy!", event.getAuthor().getAvatarUrl());
+                event.getChannel().sendMessage(xpInfo.build()).queue();
             }
             else if(args.length == 2){
-                Member member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
+                Member member;
+                if(args[1].contains("!")){
+                    member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
+                }
+                else{
+                    member = event.getGuild().getMemberById(args[1].replace("<@", "").replace(">", ""));
+                }
                 DBObject memQuery = new BasicDBObject("memberID", member.getId());
                 DBCursor cursor1 = AsheBot.users.find(memQuery);
-                if(cursor1.count() == 0) event.getChannel().sendMessage("Tell your friend to start messaging!").queue();
+                if(cursor1.count() == 0){
+                    EmbedBuilder noInfo = new EmbedBuilder();
+                    noInfo.setTitle("Your Friend Has Not Chatted Yet...");
+                    noInfo.setDescription("Tell " + member.getAsMention() + " to start chatting!");
+                    noInfo.setFooter("Enjoy", event.getAuthor().getAvatarUrl());
+                    event.getChannel().sendMessage(noInfo.build()).queue();
+                }
                 else{
                     String xp = getXp(member)+"";
-                    event.getChannel().sendMessage("Here is " + args[1] + "'s XP: " + xp).queue();
+                    EmbedBuilder xpInfo = new EmbedBuilder();
+                    xpInfo.setColor(0x000000);
+                    xpInfo.setTitle(member.getEffectiveName() + "'s XP in Ashe!");
+                    xpInfo.setDescription(member.getAsMention() + " you have: " + xp + " points!\nKeep sending messages!");
+                    xpInfo.setFooter("Enjoy!", event.getAuthor().getAvatarUrl());
+                    event.getChannel().sendMessage(xpInfo.build()).queue();
                 }
 
             }

@@ -1,7 +1,7 @@
 package harry.AsheBot.Events;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.Random;
@@ -18,13 +18,12 @@ public class GuildMemberLeave extends ListenerAdapter {
             "Brace yourselves. [member] just left the server.",
             "A wild [member] left."
     };
-    public void onGuildMemberJoin(GuildMemberLeaveEvent event) {
+    public void onGuildMemberLeave(GuildMemberRemoveEvent event) {
         Random rand = new Random();
         int number = rand.nextInt(messages.length);
         EmbedBuilder leave = new EmbedBuilder();
         leave.setColor(0xf48342);
         leave.setDescription(messages[number].replace("[member]", event.getMember().getAsMention()));
-
         event.getGuild().getDefaultChannel().sendMessage(leave.build()).queue();
     }
 }
