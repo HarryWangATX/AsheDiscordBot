@@ -44,8 +44,8 @@ public class XPSystem extends ListenerAdapter {
                 String xp = getXp(event.getMember())+"";
                 EmbedBuilder xpInfo = new EmbedBuilder();
                 xpInfo.setColor(0x000000);
-                xpInfo.setTitle(event.getMember().getNickname() + "'s XP in Ashe!");
-                xpInfo.setDescription(event.getMember().getAsMention() + " you have: " + xp + " points!\nKeep sending messages!");
+                xpInfo.setTitle(event.getMember().getEffectiveName() + "'s XP in Ashe!");
+                xpInfo.setDescription("[" + event.getMember().getAsMention() + "] you have: " + xp + " points!\nKeep sending messages!");
                 xpInfo.setFooter("Enjoy!", event.getAuthor().getAvatarUrl());
                 event.getChannel().sendMessage(xpInfo.build()).queue();
             }

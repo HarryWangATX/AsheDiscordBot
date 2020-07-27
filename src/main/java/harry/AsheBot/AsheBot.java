@@ -37,10 +37,8 @@ public class AsheBot {
 //        DBObject converted = convert(test);
 //        System.out.println("adsfsdf");
 //        users.insert(converted);
-//        DBObject query = new BasicDBObject();
-//        DBCursor cursor = users.find();
+//        DBObject query = new BasicDBObject("AFK", "hello");
 //        users.findAndRemove(query);
-//        System.out.println(cursor.count());
         init();
         jda = new JDABuilder(AccountType.BOT).setToken("TOKEN").build();
         jda.getPresence().setStatus(OnlineStatus.ONLINE);
@@ -49,6 +47,7 @@ public class AsheBot {
         jda.addEventListener(new GuildMemberJoin());
         jda.addEventListener(new GuildMemberLeave());
         jda.addEventListener(new GuildMessageReactionAdd());
+        jda.addEventListener(new memberAFK());
         jda.addEventListener(new XPSystem());
         //jda.addEventListener(new GuildMessageReceive());
     }
@@ -60,6 +59,11 @@ public class AsheBot {
         DBCursor all = users.find();
         while (all.hasNext()){
             DBObject next = all.next();
+//            if(next.get("XP") == null){
+//                users.findAndRemove(next);
+//                continue;
+//            }
+            System.out.println(next);
             User temp = new User();
             temp.setTimer(1);
             temp.setAfk((String)next.get("AFK"));

@@ -24,6 +24,7 @@ public class GuildMemberLeave extends ListenerAdapter {
         EmbedBuilder leave = new EmbedBuilder();
         leave.setColor(0xf48342);
         leave.setDescription(messages[number].replace("[member]", event.getMember().getAsMention()));
+
         event.getGuild().getDefaultChannel().sendMessage(leave.build()).queue();
     }
 }
