@@ -11,6 +11,8 @@ import net.dv8tion.jda.api.entities.Activity;
 
 import javax.security.auth.login.LoginException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AsheBot {
     public static JDA jda;
@@ -30,15 +32,15 @@ public class AsheBot {
 //        DBObject query = new BasicDBObject("lvl", 0);
 //        users.findAndRemove(query);
 //        System.out.println(users.find().count());
-//        DBObject query = new BasicDBObject("lvl", 123);
-//        DBCursor cursor = users.find(query);
-//        DBObject one = cursor.one();
-//        System.out.println((String)one.get("lvl"));
-//        DBObject converted = convert(test);
-//        System.out.println("adsfsdf");
-//        users.insert(converted);
-//        DBObject query = new BasicDBObject("AFK", "hello");
-//        users.findAndRemove(query);
+        //DBObject query = new BasicDBObject("memberID", "623999567725330436");
+        //DBCursor cursor = users.find(query);
+        //DBObject one = cursor.one();
+        //System.out.println((String)one.get("lvl"));
+        //DBObject converted = convert(test);
+        //System.out.println("adsfsdf");
+        //users.insert(converted);
+        //DBObject query = new BasicDBObject("AFK", "hello");
+        //users.findAndRemove(query);
         init();
         jda = new JDABuilder(AccountType.BOT).setToken("TOKEN").build();
         jda.getPresence().setStatus(OnlineStatus.ONLINE);
@@ -49,11 +51,21 @@ public class AsheBot {
         jda.addEventListener(new GuildMessageReactionAdd());
         jda.addEventListener(new memberAFK());
         jda.addEventListener(new XPSystem());
+        jda.addEventListener(new WarningSystem());
         //jda.addEventListener(new GuildMessageReceive());
     }
-    public static DBObject convert(User user){
-        //System.out.println("adsfsdf");
-        return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID()).append("Timer", user.getTimer());
+
+    public static DBObject convert(User user, Warn warns){
+        return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID()).append("Timer", user.getTimer()).append("Warns", warns.getWarns());
+    }
+    public static void addNew(String memberID){
+        User newUser = new User();
+        Warn warn = new Warn(new ArrayList<>());
+        newUser.setAfk("");
+        newUser.setMemberID(memberID);
+        newUser.setXp(0);
+        newUser.setTimer(1);
+        AsheBot.users.insert(AsheBot.convert(newUser, warn));
     }
     public static void init(){
         DBCursor all = users.find();
@@ -64,12 +76,14 @@ public class AsheBot {
 //                continue;
 //            }
             System.out.println(next);
+            Warn temp1 = new Warn((List<String >)next.get("Warns"));
             User temp = new User();
             temp.setTimer(1);
             temp.setAfk((String)next.get("AFK"));
             temp.setXp((int)next.get("XP"));
             temp.setMemberID((String)next.get("memberID"));
-            users.findAndModify(next, convert(temp));
+            users.findAndModify(next, convert(temp, temp1));
+
         }
     }
 }

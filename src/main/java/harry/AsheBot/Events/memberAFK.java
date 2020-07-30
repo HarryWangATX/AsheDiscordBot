@@ -29,15 +29,16 @@ public class memberAFK extends ListenerAdapter {
                     afk += args[i] + " ";
                 }
                 afk = afk.substring(0, afk.length()-1);
-                User temp = new User();
                 String memberID = event.getMember().getId();
                 DBObject query = new BasicDBObject("memberID", memberID);
                 DBCursor cursor = AsheBot.users.find(query);
+                User temp = new User();
+                Warn temp1 = new Warn((List<String>)cursor.one().get("Warns"));
                 temp.setMemberID(memberID);
                 temp.setXp((int)cursor.one().get("XP"));
                 temp.setTimer((int)cursor.one().get("Timer"));
                 temp.setAfk(afk);
-                AsheBot.users.findAndModify(query, AsheBot.convert(temp));
+                AsheBot.users.findAndModify(query, AsheBot.convert(temp, temp1));
                 System.out.println(AsheBot.users.find(new BasicDBObject("memberID", memberID)).one());
                 event.getChannel().sendMessage("You are now afk for: " + afk).queue();
             }
@@ -47,11 +48,13 @@ public class memberAFK extends ListenerAdapter {
             String member = event.getMember().getId();
             DBObject queryAFK = new BasicDBObject("memberID", member);
             DBCursor cursor1 = AsheBot.users.find(queryAFK);
-            String afkMess = (String)cursor1.one().get("AFK");
-            System.out.println(afkMess);
-            if(!afkMess.equalsIgnoreCase("")){
-                event.getChannel().sendMessage("Welcome back " + event.getAuthor().getAsMention() + ", I have removed your AFK").queue();
-                removeAFK(member);
+            if(cursor1.count() > 1){
+                String afkMess = (String)cursor1.one().get("AFK");
+                System.out.println(afkMess);
+                if(!afkMess.equalsIgnoreCase("")){
+                    event.getChannel().sendMessage("Welcome back " + event.getAuthor().getAsMention() + ", I have removed your AFK").queue();
+                    removeAFK(member);
+                }
             }
         }
 
@@ -67,29 +70,22 @@ public class memberAFK extends ListenerAdapter {
             }
             for (int i = 0; i < memberIds.size(); i++) {
                 System.out.println(memberIds.get(i));
+                Member member;
                 if(memberIds.get(i).contains("!")){
-                    Member member = event.getGuild().getMemberById(memberIds.get(i).replace("<@!", "").replace(">", ""));
-                    System.out.println(member.getAsMention());
-                    DBObject query = new BasicDBObject("memberID", member.getId());
-                    DBCursor cursor = AsheBot.users.find(query);
-                    String afk = (String)cursor.one().get("AFK");
-                    if(!afk.equals("")){
-
-                        EmbedBuilder afkEmbed = new EmbedBuilder();
-                        afkEmbed.setTitle(member.getEffectiveName() + " Is Currently AFK");
-                        afkEmbed.setDescription("[" + member.getAsMention() + "] is currently " + afk);
-                        afkEmbed.setFooter("Contact Them Later!", event.getAuthor().getAvatarUrl());
-                        event.getChannel().sendMessage(afkEmbed.build()).queue();
-                    }
+                    member = event.getGuild().getMemberById(memberIds.get(i).replace("<@!", "").replace(">", ""));
+                }
+                else if(memberIds.get(i).contains("&")){
+                    member = event.getGuild().getMemberById(memberIds.get(i).replace("<@&", "").replace(">", ""));
                 }
                 else{
-                    Member member = event.getGuild().getMemberById(memberIds.get(i).replace("<@", "").replace(">", ""));
-                    System.out.println(member.getAsMention());
-                    DBObject query = new BasicDBObject("memberID", member.getId());
-                    DBCursor cursor = AsheBot.users.find(query);
+                    member = event.getGuild().getMemberById(memberIds.get(i).replace("<@", "").replace(">", ""));
+                }
+                System.out.println(member.getAsMention());
+                DBObject query = new BasicDBObject("memberID", member.getId());
+                DBCursor cursor = AsheBot.users.find(query);
+                if(cursor.count() > 0){
                     String afk = (String)cursor.one().get("AFK");
                     if(!afk.equals("")){
-
                         EmbedBuilder afkEmbed = new EmbedBuilder();
                         afkEmbed.setTitle(member.getEffectiveName() + " Is Currently AFK");
                         afkEmbed.setDescription("[" + member.getAsMention() + "] is currently " + afk);
@@ -106,11 +102,12 @@ public class memberAFK extends ListenerAdapter {
     public static void removeAFK(String memberID){
         DBObject queryAFK = new BasicDBObject("memberID", memberID);
         DBCursor cursor1 = AsheBot.users.find(queryAFK);
+        Warn temp1 = new Warn((List<String>)cursor1.one().get("Warns"));
         User temp = new User();
         temp.setAfk("");
         temp.setTimer((int)cursor1.one().get("Timer"));
         temp.setXp((int)cursor1.one().get("XP"));
         temp.setMemberID(memberID);
-        AsheBot.users.findAndModify(queryAFK, AsheBot.convert(temp));
+        AsheBot.users.findAndModify(queryAFK, AsheBot.convert(temp, temp1));
     }
 }

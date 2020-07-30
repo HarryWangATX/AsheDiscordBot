@@ -11,9 +11,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.sql.Time;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class XPSystem extends ListenerAdapter {
 
@@ -26,12 +24,7 @@ public class XPSystem extends ListenerAdapter {
         DBCursor cursor = AsheBot.users.find(query);
         //System.out.println(cursor.count());
         if(cursor.count() == 0){
-            User newUser = new User();
-            newUser.setAfk("");
-            newUser.setMemberID(event.getMember().getId());
-            newUser.setXp(0);
-            newUser.setTimer(1);
-            AsheBot.users.insert(AsheBot.convert(newUser));
+            AsheBot.addNew(event.getMember().getId());
         }
         else if (canGetXP(event.getMember())){
             assert event.getMember() != null;
@@ -53,6 +46,9 @@ public class XPSystem extends ListenerAdapter {
                 Member member;
                 if(args[1].contains("!")){
                     member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
+                }
+                else if(args[1].contains("&")){
+                    member = event.getGuild().getMemberById(args[1].replace("<@&", "").replace(">", ""));
                 }
                 else{
                     member = event.getGuild().getMemberById(args[1].replace("<@", "").replace(">", ""));
@@ -104,7 +100,9 @@ public class XPSystem extends ListenerAdapter {
         temp.setAfk((String)cursor.one().get("AFK"));
         temp.setXp(newXp);
         temp.setTimer((int)cursor.one().get("Timer"));
-        AsheBot.users.findAndModify(query, AsheBot.convert(temp));
+        List<String> warns = (List<String>)cursor.one().get("Warns");
+        Warn warn = new Warn(warns);
+        AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
     }
 
     public void setTimer(String memberID){
@@ -116,12 +114,14 @@ public class XPSystem extends ListenerAdapter {
         temp.setAfk((String)cursor.one().get("AFK"));
         temp.setXp((int)cursor.one().get("XP"));
         temp.setTimer(0);
-        AsheBot.users.findAndModify(query, AsheBot.convert(temp));
+        List<String> warns = (List<String>)cursor.one().get("Warns");
+        Warn warn = new Warn(warns);
+        AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
         new java.util.Timer().schedule(
                 new java.util.TimerTask(){
                     public void run(){
                         temp.setTimer(1);
-                        AsheBot.users.findAndModify(query, AsheBot.convert(temp));
+                        AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
                         //System.out.println("Modified");
                     }
                 },

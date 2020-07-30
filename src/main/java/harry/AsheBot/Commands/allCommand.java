@@ -184,5 +184,21 @@ public class allCommand extends ListenerAdapter {
             }
         }
         //end of ban command
+        //start of ping ABHI
+        if(args[0].equalsIgnoreCase("~pingABHI")){
+            Role ashe = event.getGuild().getRolesByName("smallest of pps", true).get(0);
+            if(event.getMember().getRoles().contains(ashe)){
+                event.getChannel().sendMessage("Initializing ABHI PING").queue();
+                Member ABHI = event.getGuild().getMemberById("623999567725330436");
+                for (int i = 0; i < 25; i++) {
+                    event.getChannel().sendMessage(ABHI.getAsMention()).queue();
+                }
+                event.getChannel().sendMessage("ABHI!!!!!!!!").queue();
+            }
+            else{
+                event.getChannel().sendMessage("You don't have perms to ping ABHI. REEEEEEEEEEEEEEEEE!").queue();
+            }
+        }
+        //end of ping ABHI
     }
 }
