@@ -34,31 +34,30 @@ public class memberAFK extends ListenerAdapter {
                 DBCursor cursor = AsheBot.users.find(query);
                 User temp = new User();
                 Warn temp1 = new Warn((List<String>)cursor.one().get("Warns"));
+                temp.setBalance((int)cursor.one().get("Bal"));
                 temp.setMemberID(memberID);
                 temp.setXp((int)cursor.one().get("XP"));
                 temp.setTimer((int)cursor.one().get("Timer"));
                 temp.setAfk(afk);
                 AsheBot.users.findAndModify(query, AsheBot.convert(temp, temp1));
-                System.out.println(AsheBot.users.find(new BasicDBObject("memberID", memberID)).one());
+                //System.out.println(AsheBot.users.find(new BasicDBObject("memberID", memberID)).one());
                 event.getChannel().sendMessage("You are now afk for: " + afk).queue();
             }
         }
-
-        if(!args[0].equalsIgnoreCase("~AFK")){
-            String member = event.getMember().getId();
+        else{
+            String member = event.getAuthor().getId();
+            //System.out.println(member);
             DBObject queryAFK = new BasicDBObject("memberID", member);
             DBCursor cursor1 = AsheBot.users.find(queryAFK);
-            if(cursor1.count() > 1){
+            if(cursor1.count() > 0){
                 String afkMess = (String)cursor1.one().get("AFK");
                 System.out.println(afkMess);
                 if(!afkMess.equalsIgnoreCase("")){
-                    event.getChannel().sendMessage("Welcome back " + event.getAuthor().getAsMention() + ", I have removed your AFK").queue();
+                    event.getChannel().sendMessage("Welcome back " + event.getMember().getAsMention() + ", I have removed your AFK").queue();
                     removeAFK(member);
                 }
             }
         }
-
-
         //AFK call code
         if(event.getMessage().getContentRaw().contains("<@")){
             List<String> memberIds = new ArrayList<>();
@@ -69,7 +68,7 @@ public class memberAFK extends ListenerAdapter {
                 }
             }
             for (int i = 0; i < memberIds.size(); i++) {
-                System.out.println(memberIds.get(i));
+                //System.out.println(memberIds.get(i));
                 Member member;
                 if(memberIds.get(i).contains("!")){
                     member = event.getGuild().getMemberById(memberIds.get(i).replace("<@!", "").replace(">", ""));
@@ -80,7 +79,7 @@ public class memberAFK extends ListenerAdapter {
                 else{
                     member = event.getGuild().getMemberById(memberIds.get(i).replace("<@", "").replace(">", ""));
                 }
-                System.out.println(member.getAsMention());
+                //System.out.println(member.getAsMention());
                 DBObject query = new BasicDBObject("memberID", member.getId());
                 DBCursor cursor = AsheBot.users.find(query);
                 if(cursor.count() > 0){
@@ -104,6 +103,7 @@ public class memberAFK extends ListenerAdapter {
         DBCursor cursor1 = AsheBot.users.find(queryAFK);
         Warn temp1 = new Warn((List<String>)cursor1.one().get("Warns"));
         User temp = new User();
+        temp.setBalance((int)cursor1.one().get("Bal"));
         temp.setAfk("");
         temp.setTimer((int)cursor1.one().get("Timer"));
         temp.setXp((int)cursor1.one().get("XP"));

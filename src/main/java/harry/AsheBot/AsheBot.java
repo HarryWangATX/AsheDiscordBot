@@ -43,8 +43,8 @@ public class AsheBot {
         //users.findAndRemove(query);
         init();
         jda = new JDABuilder(AccountType.BOT).setToken("TOKEN").build();
-        jda.getPresence().setStatus(OnlineStatus.ONLINE);
-        jda.getPresence().setActivity(Activity.playing("WATCHING OVER ASHE!!"));
+        jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
+        jda.getPresence().setActivity(Activity.watching("Over Ashe"));
         jda.addEventListener(new allCommand());
         jda.addEventListener(new GuildMemberJoin());
         jda.addEventListener(new GuildMemberLeave());
@@ -52,16 +52,18 @@ public class AsheBot {
         jda.addEventListener(new memberAFK());
         jda.addEventListener(new XPSystem());
         jda.addEventListener(new WarningSystem());
+        jda.addEventListener(new CurrencySystem());
         //jda.addEventListener(new GuildMessageReceive());
     }
 
     public static DBObject convert(User user, Warn warns){
-        return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID()).append("Timer", user.getTimer()).append("Warns", warns.getWarns());
+        return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID()).append("Timer", user.getTimer()).append("Bal", user.getBalance()).append("Warns", warns.getWarns());
     }
     public static void addNew(String memberID){
         User newUser = new User();
         Warn warn = new Warn(new ArrayList<>());
         newUser.setAfk("");
+        newUser.setBalance(0);
         newUser.setMemberID(memberID);
         newUser.setXp(0);
         newUser.setTimer(1);
@@ -77,13 +79,14 @@ public class AsheBot {
 //            }
             System.out.println(next);
             Warn temp1 = new Warn((List<String >)next.get("Warns"));
+            //Warn temp1 = new Warn(new ArrayList<>());
             User temp = new User();
+            temp.setBalance((int)next.get("Bal"));
             temp.setTimer(1);
             temp.setAfk((String)next.get("AFK"));
             temp.setXp((int)next.get("XP"));
             temp.setMemberID((String)next.get("memberID"));
             users.findAndModify(next, convert(temp, temp1));
-
         }
     }
 }

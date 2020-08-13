@@ -17,8 +17,8 @@ import java.util.List;
 public class WarningSystem extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
         String[] args = event.getMessage().getContentRaw().split(" ");
-        System.out.println(Arrays.toString(args));
-
+        //System.out.println(Arrays.toString(args));
+        //System.out.println(event.getMember().getAsMention());
         //start of method to display warnings
         if(args[0].equalsIgnoreCase("~WARNS") || args[0].equalsIgnoreCase("~WARN")){
             if (args.length == 1){
@@ -73,7 +73,11 @@ public class WarningSystem extends ListenerAdapter {
                     }
                     else{
                         Member member;
-                        String reason = args[2];
+                        String reason = "";
+                        for (int i = 2; i < args.length; i++) {
+                            reason += args[i] + " ";
+                        }
+
                         if(args[1].contains("!")){
                             member = event.getGuild().getMemberById(args[1].replace("<@!","").replace(">", ""));
                         }
@@ -83,9 +87,19 @@ public class WarningSystem extends ListenerAdapter {
                         else {
                             member = event.getGuild().getMemberById(args[1].replace("<@","").replace(">", ""));
                         }
+                        //System.out.println(member.getAsMention());
                         if(addWarn(member, reason, event.getMember())){
                             event.getChannel().sendMessage(member.getAsMention() + ", smh. You have over 5 warns. You will be banned in 5 secs!").queue();
-                            event.getChannel().sendMessage("~ban " + member.getAsMention());
+                            new java.util.Timer().schedule(
+                                    new java.util.TimerTask(){
+                                        public void run(){
+                                            event.getGuild().ban(member, 0).complete();
+                                            event.getChannel().sendMessage("Okay " + args[1] + " has been banned!").queue();
+                                            //System.out.println("Modified");
+                                        }
+                                    },
+                                    5*1000
+                            );
                         }
                         else{
                             event.getChannel().sendMessage(member.getAsMention() + ", smh. Don't get warned again. Ban at 5 warns.").queue();
@@ -95,6 +109,9 @@ public class WarningSystem extends ListenerAdapter {
             }
         }
         //end of add warn
+
+        //start of remove warn
+
     }
     public List<String> getWarn(Member user){
         String id = user.getId();
@@ -114,6 +131,7 @@ public class WarningSystem extends ListenerAdapter {
             AsheBot.addNew(user.getId());
         }
         User temp = new User();
+        temp.setBalance((int)member.one().get("Bal"));
         temp.setMemberID(id);
         temp.setXp((int)member.one().get("XP"));
         temp.setTimer((int)member.one().get("Timer"));
@@ -124,6 +142,7 @@ public class WarningSystem extends ListenerAdapter {
         Warn warn = new Warn(warns);
         AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
         if(warns.size() == 5){
+            AsheBot.users.findAndRemove(query);
             return true;
         }
         return false;

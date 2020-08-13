@@ -20,11 +20,11 @@ public class XPSystem extends ListenerAdapter {
 
         //System.out.println(AsheBot.users.find().one());
 
-        DBObject query = new BasicDBObject("memberID", event.getMember().getId());
+        DBObject query = new BasicDBObject("memberID", event.getAuthor().getId());
         DBCursor cursor = AsheBot.users.find(query);
         //System.out.println(cursor.count());
         if(cursor.count() == 0){
-            AsheBot.addNew(event.getMember().getId());
+            AsheBot.addNew(event.getAuthor().getId());
         }
         else if (canGetXP(event.getMember())){
             assert event.getMember() != null;
@@ -76,7 +76,7 @@ public class XPSystem extends ListenerAdapter {
         }
     }
 
-    public int getXp(Member member){
+    public static int getXp(Member member){
         String id = member.getId();
         DBObject query = new BasicDBObject("memberID", id);
         DBCursor cursor = AsheBot.users.find(query);
@@ -96,6 +96,7 @@ public class XPSystem extends ListenerAdapter {
         DBCursor cursor = AsheBot.users.find(query);
         int newXp = (int)cursor.one().get("XP") + randXP();
         User temp = new User();
+        temp.setBalance((int)cursor.one().get("Bal"));
         temp.setMemberID(id);
         temp.setAfk((String)cursor.one().get("AFK"));
         temp.setXp(newXp);
@@ -110,6 +111,7 @@ public class XPSystem extends ListenerAdapter {
         DBObject query = new BasicDBObject("memberID", id);
         DBCursor cursor = AsheBot.users.find(query);
         User temp = new User();
+        temp.setBalance((int)cursor.one().get("Bal"));
         temp.setMemberID(memberID);
         temp.setAfk((String)cursor.one().get("AFK"));
         temp.setXp((int)cursor.one().get("XP"));
@@ -120,7 +122,13 @@ public class XPSystem extends ListenerAdapter {
         new java.util.Timer().schedule(
                 new java.util.TimerTask(){
                     public void run(){
+                        temp.setBalance((int)cursor.one().get("Bal"));
+                        temp.setMemberID(memberID);
+                        temp.setAfk((String)cursor.one().get("AFK"));
+                        temp.setXp((int)cursor.one().get("XP"));
                         temp.setTimer(1);
+                        List<String> warns = (List<String>)cursor.one().get("Warns");
+                        Warn warn = new Warn(warns);
                         AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
                         //System.out.println("Modified");
                     }

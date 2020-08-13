@@ -9,17 +9,19 @@ import harry.AsheBot.Events.XPSystem;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.lang.reflect.Field;
+import java.text.Format;
 import java.util.List;
-
 
 public class allCommand extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        String[] args = event.getMessage().getContentRaw().split(" ");
+        String[] args = event.getMessage().getContentRaw().split("\\s+");
         //System.out.println(args[0].equalsIgnoreCase("~mute"));
         //System.out.println(Arrays.toString(args));
         //info command
@@ -27,7 +29,7 @@ public class allCommand extends ListenerAdapter {
             EmbedBuilder hello = new EmbedBuilder();
             hello.setTitle("Ashe Server Info");
             hello.addField("Purpose: ", "GAMING!", false);
-            hello.setDescription("This server is mainly a surviv.io server. We also play kruncker. Feel free to give suggestions and follow the rules occasionally!");
+            hello.setDescription("This server is mainly a surviv.io server. We also play krunker, VALORANT. Feel free to give suggestions and follow the rules occasionally!");
             hello.setColor(0xf45642);
             hello.setFooter("From", event.getMember().getUser().getAvatarUrl());
             event.getChannel().sendTyping().queue();
@@ -200,5 +202,16 @@ public class allCommand extends ListenerAdapter {
             }
         }
         //end of ping ABHI
+        //start of shop command
+        if(args[0].equalsIgnoreCase("~shop")){
+            event.getChannel().deleteMessageById(event.getChannel().getLatestMessageId()).queue();
+            EmbedBuilder shop = new EmbedBuilder();
+            shop.setTitle("Welcome To Ashe Shop!");
+            shop.setThumbnail(event.getGuild().getIconUrl());
+            shop.setDescription("Item 1: **Special Role**\n\tCost: ***500 \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2***\nItem 2: **Fuzzy Doggo Pics**\n\tCost: ***6900 \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2***\nItem 3: **Private Channel**\n\tCost: ***696969 Ashii***\n\n\nTo Buy head over to Shop-Commands");
+            shop.setFooter("Get Grinding! Earn \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2 By Chatting! Use ~transfer to exchange your XP for \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2!");
+            event.getChannel().sendMessage(shop.build()).queue();
+
+        }
     }
 }
