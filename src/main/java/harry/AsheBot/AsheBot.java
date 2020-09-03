@@ -53,6 +53,7 @@ public class AsheBot {
         jda.addEventListener(new XPSystem());
         jda.addEventListener(new WarningSystem());
         jda.addEventListener(new CurrencySystem());
+        jda.addEventListener(new GuildPrivateMessageReceived());
         //jda.addEventListener(new GuildMessageReceive());
     }
 

@@ -186,22 +186,6 @@ public class allCommand extends ListenerAdapter {
             }
         }
         //end of ban command
-        //start of ping ABHI
-        if(args[0].equalsIgnoreCase("~pingABHI")){
-            Role ashe = event.getGuild().getRolesByName("smallest of pps", true).get(0);
-            if(event.getMember().getRoles().contains(ashe)){
-                event.getChannel().sendMessage("Initializing ABHI PING").queue();
-                Member ABHI = event.getGuild().getMemberById("623999567725330436");
-                for (int i = 0; i < 25; i++) {
-                    event.getChannel().sendMessage(ABHI.getAsMention()).queue();
-                }
-                event.getChannel().sendMessage("ABHI!!!!!!!!").queue();
-            }
-            else{
-                event.getChannel().sendMessage("You don't have perms to ping ABHI. REEEEEEEEEEEEEEEEE!").queue();
-            }
-        }
-        //end of ping ABHI
         //start of shop command
         if(args[0].equalsIgnoreCase("~shop")){
             event.getChannel().deleteMessageById(event.getChannel().getLatestMessageId()).queue();
@@ -212,6 +196,13 @@ public class allCommand extends ListenerAdapter {
             shop.setFooter("Get Grinding! Earn \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2 By Chatting! Use ~transfer to exchange your XP for \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2!");
             event.getChannel().sendMessage(shop.build()).queue();
 
+        }
+        //end of shop commands
+        //start of gab
+        if(args[0].equalsIgnoreCase("~gab")){
+            for (int i = 0; i < 30; i++) {
+                event.getChannel().sendMessage("GAB NITRO").queue();
+            }
         }
     }
 }

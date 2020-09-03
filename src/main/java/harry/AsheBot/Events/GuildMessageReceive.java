@@ -8,13 +8,18 @@ import java.util.HashMap;
 
 
 public class GuildMessageReceive extends ListenerAdapter {
-    HashMap<Member, Integer> playerXp = new HashMap<>();
-    HashMap<Member, Integer> playerTimer = new HashMap<>();
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
-
-
-    }
-    private void randXp(Member member){
-
+        String mess = event.getMessage().getContentRaw();
+        if(mess.contains("<@")){
+            int count = 0;
+            for (int i = 0; i < mess.length() - 1; i++) {
+                if(mess.substring(i, i+2).equalsIgnoreCase("<@")){
+                    count++;
+                }
+            }
+            if (count >= 7){
+                event.getMember().ban(10, "Raiding").complete();
+            }
+        }
     }
 }

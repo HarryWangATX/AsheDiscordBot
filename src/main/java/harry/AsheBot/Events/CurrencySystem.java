@@ -8,6 +8,7 @@ import harry.AsheBot.AsheBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.List;
@@ -51,6 +52,13 @@ public class CurrencySystem extends ListenerAdapter {
             }
         }
         //end of transfer
+        //start of shop orders
+        if(args[0].equalsIgnoreCase("~buy")){
+            Member mooN = event.getGuild().getMemberById("581673853537746944");
+            event.getChannel().sendMessage("Check Your DM!").queue();
+            mooN.getUser().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage(event.getMember().getUser().getName() + " has purchased a custom role!").queue());
+            event.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("What item are you buying? (Enter a number on the shop)").queue());
+        }
     }
     public void updateBal(Member member, int newXp, int newBal){
         String id = member.getId();
@@ -66,7 +74,7 @@ public class CurrencySystem extends ListenerAdapter {
         Warn warn = new Warn(warns);
         AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
     }
-    public int getBal(Member member){
+    public static int getBal(Member member){
         String id = member.getId();
         DBObject query = new BasicDBObject("memberID", id);
         DBCursor cursor = AsheBot.users.find(query);
