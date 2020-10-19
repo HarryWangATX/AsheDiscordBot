@@ -9,6 +9,7 @@ public class User {
     public int xp=0;
     public int balance=0;
     public int timer=0;
+    public int curTimer=0;
     public String afk = "";
     public String MemberID="";
     public User(){
@@ -29,9 +30,11 @@ public class User {
     public int getTimer(){
         return timer;
     }
+    public int getCurTimer() { return curTimer; }
     public void setMemberID(String id){
         MemberID = id;
     }
+    public void setCurTimer(int timer) { curTimer = timer; }
     public void setXp(int newX){
         xp = newX;
     }

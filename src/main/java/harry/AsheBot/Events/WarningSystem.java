@@ -136,6 +136,7 @@ public class WarningSystem extends ListenerAdapter {
         temp.setXp((int)member.one().get("XP"));
         temp.setTimer((int)member.one().get("Timer"));
         temp.setAfk((String)member.one().get("AFK"));
+        temp.setCurTimer((int)member.one().get("curTimer"));
         List<String> warns = (List<String>)member.one().get("Warns");
         reason += " - Given by: " + giver.getEffectiveName();
         warns.add(reason);

@@ -7,6 +7,7 @@ import harry.AsheBot.AsheBot;
 import harry.AsheBot.Events.User;
 import harry.AsheBot.Events.XPSystem;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -24,6 +25,16 @@ public class allCommand extends ListenerAdapter {
         String[] args = event.getMessage().getContentRaw().split("\\s+");
         //System.out.println(args[0].equalsIgnoreCase("~mute"));
         //System.out.println(Arrays.toString(args));
+
+        //say command
+        if(args[0].equalsIgnoreCase("~say")){
+            event.getMessage().delete().complete();
+            System.out.println("hereeeee");
+            String toSay = event.getMessage().getContentRaw().replace("~say", "");
+
+            event.getChannel().sendMessage(toSay).queue();
+        }
+
         //info command
         if (args[0].equalsIgnoreCase(AsheBot.prefix + "info")) {
             EmbedBuilder hello = new EmbedBuilder();
@@ -52,7 +63,7 @@ public class allCommand extends ListenerAdapter {
                     event.getChannel().deleteMessages(messages).queue();
                     EmbedBuilder success = new EmbedBuilder();
                     success.setColor(0x22ff2a);
-                    success.setTitle("✅ Successfully deleted " + args[1] + " messages.");
+                    success.setTitle("Successfully deleted " + args[1] + " messages.");
                     event.getChannel().sendTyping().queue();
                     event.getChannel().sendMessage(success.build()).queue();
                 } catch (IllegalArgumentException e) {
@@ -97,92 +108,112 @@ public class allCommand extends ListenerAdapter {
         //end of unmute command
         //muting command
         if (args[0].equalsIgnoreCase("~mute")) {
+            if(event.getMember().hasPermission(Permission.MANAGE_ROLES)){
+                Role role = event.getGuild().getRoleById("707362535090814997");
+                if (args.length == 2) {
+                    Member member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
+                    assert member != null;
+                    //System.out.println(member.getAsMention());
+                    if (!member.getRoles().contains(role)) {
 
-            Role role = event.getGuild().getRoleById("707362535090814997");
-            if (args.length == 2) {
-                Member member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
-                assert member != null;
-                //System.out.println(member.getAsMention());
-                if (!member.getRoles().contains(role)) {
-
-                    assert role != null;
-                    try {
-                        event.getGuild().addRoleToMember(member, role).complete();
-                        event.getChannel().sendMessage("Muted " + args[1] + ".").queue();
-                    } catch (HierarchyException e) {
-                        //System.out.println(e.toString());
-                        event.getChannel().sendMessage("Bruh, you don't have permission to mute people higher or with equal role than yourself nor do you even have permissions to MUTE LMAO. BOT!").queue();
+                        assert role != null;
+                        try {
+                            event.getGuild().addRoleToMember(member, role).complete();
+                            event.getChannel().sendMessage("Muted " + args[1] + ".").queue();
+                        } catch (HierarchyException e) {
+                            //System.out.println(e.toString());
+                            event.getChannel().sendMessage("Bruh, you don't have permission to mute people higher or with equal role than yourself nor do you even have permissions to MUTE LMAO. BOT!").queue();
+                        }
+                    } else {
+                        event.getChannel().sendMessage("Bruh, they are already muted. SMFH!").queue();
                     }
-                } else {
-                    event.getChannel().sendMessage("Bruh, they are already muted. SMFH!").queue();
-                }
-            } else if (args.length == 3) {
-                int minutes = Integer.parseInt(args[2]);
-                Member member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
-                assert member != null;
-                if (!member.getRoles().contains(role)) {
+                } else if (args.length == 3) {
+                    int minutes = Integer.parseInt(args[2]);
+                    Member member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
+                    assert member != null;
+                    if (!member.getRoles().contains(role)) {
 
-                    assert role != null;
-                    try {
-                        event.getGuild().addRoleToMember(member, role).complete();
-                        event.getChannel().sendMessage("Muted " + args[1] + " for " + args[2] + " minutes.").queue();
-                        //event.getGuild().removeRoleFromMember(member, role).completeAfter(minutes, TimeUnit.MINUTES);
-                        new java.util.Timer().schedule(
-                                new java.util.TimerTask() {
-                                    public void run() {
-                                        if (member.getRoles().contains(role)) {
-                                            event.getGuild().removeRoleFromMember(member, role).complete();
-                                            event.getChannel().sendMessage(args[1] + " you are now unmuted! Start Talking!").queue();
+                        assert role != null;
+                        try {
+                            event.getGuild().addRoleToMember(member, role).complete();
+                            event.getChannel().sendMessage("Muted " + args[1] + " for " + args[2] + " minutes.").queue();
+                            //event.getGuild().removeRoleFromMember(member, role).completeAfter(minutes, TimeUnit.MINUTES);
+                            new java.util.Timer().schedule(
+                                    new java.util.TimerTask() {
+                                        public void run() {
+                                            if (member.getRoles().contains(role)) {
+                                                event.getGuild().removeRoleFromMember(member, role).complete();
+                                                event.getChannel().sendMessage(args[1] + " you are now unmuted! Start Talking!").queue();
+                                            }
                                         }
-                                    }
-                                },
-                                minutes * 60 * 1000
-                        );
-                    } catch (HierarchyException e) {
-                        //System.out.println(e.toString());
-                        event.getChannel().sendMessage("Bruh, you don't have permission to mute people higher or with equal role than yourself nor do you even have permissions to MUTE LMAO. BOT!").queue();
-                    }
+                                    },
+                                    minutes * 60 * 1000
+                            );
+                        } catch (HierarchyException e) {
+                            //System.out.println(e.toString());
+                            event.getChannel().sendMessage("Bruh, you don't have permission to mute people higher or with equal role than yourself nor do you even have permissions to MUTE LMAO. BOT!").queue();
+                        }
 
+                    } else {
+                        event.getChannel().sendMessage("Bruh, they are already muted. SMFH!").queue();
+                    }
                 } else {
-                    event.getChannel().sendMessage("Bruh, they are already muted. SMFH!").queue();
+                    event.getChannel().sendTyping().queue();
+                    event.getChannel().sendMessage("Incorrect Syntax, BOT! Make sure to mention and add time limit!").queue();
                 }
-            } else {
-                event.getChannel().sendTyping().queue();
-                event.getChannel().sendMessage("Incorrect Syntax, BOT! Make sure to mention and add time limit!").queue();
+            }
+            else{
+                event.getChannel().sendMessage("BRUH U DONT HAVE PERMS!").queue();
             }
         }
         //end of mute command
+        if(args[0].equalsIgnoreCase("~pingAce")){
+            for (int i = 0; i < 100; i++) {
+                event.getChannel().sendMessage("<@!715299047866368030>").queue();
+            }
+            event.getChannel().sendMessage("Okay, ping is over").queue();
+        }
         //kick command
         if (args[0].equalsIgnoreCase("~kick")) {
-            if (args.length < 2) {
-                event.getChannel().sendMessage("Bruh mention someone to kick!").queue();
-            } else {
-                Member member;
-                try {
-                    member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
-                    assert member != null;
-                    event.getGuild().kick(member).complete();
-                    event.getChannel().sendMessage("Okay " + args[1] + " has been kicked!").queue();
-                } catch (NumberFormatException e) {
-                    event.getChannel().sendMessage("Bruh mention someone in this channel!").queue();
+            if(event.getMember().hasPermission(Permission.KICK_MEMBERS)){
+                if (args.length < 2) {
+                    event.getChannel().sendMessage("Bruh mention someone to kick!").queue();
+                } else {
+                    Member member;
+                    try {
+                        member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
+                        assert member != null;
+                        event.getGuild().kick(member).complete();
+                        event.getChannel().sendMessage("Okay " + args[1] + " has been kicked!").queue();
+                    } catch (NumberFormatException e) {
+                        event.getChannel().sendMessage("Bruh mention someone in this channel!").queue();
+                    }
                 }
+            }
+            else{
+                event.getChannel().sendMessage("BRUH U DONT HAVE PERMS").queue();
             }
         }
         //end of kick command
         //ban command
         if (args[0].equalsIgnoreCase("~ban")) {
-            if (args.length < 2) {
-                event.getChannel().sendMessage("Bruh mention someone to ban!").queue();
-            } else {
-                Member member;
-                try {
-                    member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
-                    assert member != null;
-                    event.getGuild().ban(member, 0).complete();
-                    event.getChannel().sendMessage("Okay " + args[1] + " has been banned!").queue();
-                } catch (NumberFormatException e) {
-                    event.getChannel().sendMessage("Bruh mention someone in this channel!").queue();
+            if(event.getMember().hasPermission(Permission.BAN_MEMBERS)){
+                if (args.length < 2) {
+                    event.getChannel().sendMessage("Bruh mention someone to ban!").queue();
+                } else {
+                    Member member;
+                    try {
+                        member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
+                        assert member != null;
+                        event.getGuild().ban(member, 0).complete();
+                        event.getChannel().sendMessage("Okay " + args[1] + " has been banned!").queue();
+                    } catch (NumberFormatException e) {
+                        event.getChannel().sendMessage("Bruh mention someone in this channel!").queue();
+                    }
                 }
+            }
+            else{
+                event.getChannel().sendMessage("BRUH U DONT HAVE PERMS").queue();
             }
         }
         //end of ban command

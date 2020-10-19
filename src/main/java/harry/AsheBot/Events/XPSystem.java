@@ -101,6 +101,7 @@ public class XPSystem extends ListenerAdapter {
         temp.setAfk((String)cursor.one().get("AFK"));
         temp.setXp(newXp);
         temp.setTimer((int)cursor.one().get("Timer"));
+        temp.setCurTimer((int)cursor.one().get("curTimer"));
         List<String> warns = (List<String>)cursor.one().get("Warns");
         Warn warn = new Warn(warns);
         AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
@@ -116,6 +117,7 @@ public class XPSystem extends ListenerAdapter {
         temp.setAfk((String)cursor.one().get("AFK"));
         temp.setXp((int)cursor.one().get("XP"));
         temp.setTimer(0);
+        temp.setCurTimer((int)cursor.one().get("curTimer"));
         List<String> warns = (List<String>)cursor.one().get("Warns");
         Warn warn = new Warn(warns);
         AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
@@ -127,6 +129,7 @@ public class XPSystem extends ListenerAdapter {
                         temp.setAfk((String)cursor.one().get("AFK"));
                         temp.setXp((int)cursor.one().get("XP"));
                         temp.setTimer(1);
+                        temp.setCurTimer((int)cursor.one().get("curTimer"));
                         List<String> warns = (List<String>)cursor.one().get("Warns");
                         Warn warn = new Warn(warns);
                         AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));

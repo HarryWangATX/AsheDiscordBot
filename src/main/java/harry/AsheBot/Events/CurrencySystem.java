@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class CurrencySystem extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
@@ -25,6 +26,21 @@ public class CurrencySystem extends ListenerAdapter {
             int balance = getBal(event.getMember());
             bal.setDescription("["+event.getMember().getAsMention()+"] has ***" + balance + " \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2***!");
             event.getChannel().sendMessage(bal.build()).queue();
+        }
+
+        if(args[0].equalsIgnoreCase("~beg")){
+            if(!canRunCur(event.getMember().getId())){
+                event.getChannel().sendMessage("YOU CANT RUN THIS COMMAND THIS FAST! THE WAIT TIME IS 8 HOURS").queue();
+            }
+            else{
+                setCurTimer(event.getMember().getId());
+                int rand = (int)(Math.random() * 500);
+                event.getChannel().sendMessage("Ashe gave you " + rand + " Ashii").queue();
+                int newBal = getBal(event.getMember()) + rand;
+                updateBal(event.getMember(), XPSystem.getXp(event.getMember()), newBal);
+            }
+
+            
         }
 
         //start of transfer
@@ -56,10 +72,22 @@ public class CurrencySystem extends ListenerAdapter {
         if(args[0].equalsIgnoreCase("~buy")){
             Member mooN = event.getGuild().getMemberById("581673853537746944");
             event.getChannel().sendMessage("Check Your DM!").queue();
-            mooN.getUser().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage(event.getMember().getUser().getName() + " has purchased a custom role!").queue());
+            mooN.getUser().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage(event.getMember().getUser().getName() + " has purchased a something! Check google forms!").queue());
             event.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("What item are you buying? (Enter a number on the shop)").queue());
         }
+
+        if(args[0].equalsIgnoreCase("~give")){
+            int amount = Integer.parseInt(args[2]);
+
+            if(amount > getBal(event.getMember())){
+                event.getChannel().sendMessage("YOU DONT HAVE ENOUGHT!").queue();
+            }
+            else{
+                //Member to = event.getGuild().getMemberById()
+            }
+        }
     }
+
     public void updateBal(Member member, int newXp, int newBal){
         String id = member.getId();
         DBObject query = new BasicDBObject("memberID", id);
@@ -70,6 +98,7 @@ public class CurrencySystem extends ListenerAdapter {
         temp.setAfk((String)cursor.one().get("AFK"));
         temp.setXp(newXp);
         temp.setTimer((int)cursor.one().get("Timer"));
+        temp.setCurTimer((int)cursor.one().get("curTimer"));
         List<String> warns = (List<String>)cursor.one().get("Warns");
         Warn warn = new Warn(warns);
         AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
@@ -80,4 +109,47 @@ public class CurrencySystem extends ListenerAdapter {
         DBCursor cursor = AsheBot.users.find(query);
         return (int)cursor.one().get("Bal");
     }
+
+    public int getCurTimer(String memberID){
+        String id = memberID;
+        DBObject query = new BasicDBObject("memberID", id);
+        DBCursor cursor = AsheBot.users.find(query);
+        return (int)cursor.one().get("curTimer");
+    }
+    public void setCurTimer(String memberID){
+        DBObject query = new BasicDBObject("memberID", memberID);
+        DBCursor cursor = AsheBot.users.find(query);
+        User temp = new User();
+        temp.setBalance((int)cursor.one().get("Bal"));
+        temp.setMemberID(memberID);
+        temp.setAfk((String)cursor.one().get("AFK"));
+        temp.setXp((int)cursor.one().get("XP"));
+        temp.setTimer((int)cursor.one().get("Timer"));
+        temp.setCurTimer(0);
+        List<String> warns = (List<String>)cursor.one().get("Warns");
+        Warn warn = new Warn(warns);
+        AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
+
+        new java.util.Timer().schedule(
+                new java.util.TimerTask(){
+                    public void run(){
+                        temp.setBalance((int)cursor.one().get("Bal"));
+                        temp.setMemberID(memberID);
+                        temp.setAfk((String)cursor.one().get("AFK"));
+                        temp.setXp((int)cursor.one().get("XP"));
+                        temp.setTimer((int)cursor.one().get("Timer"));
+                        temp.setCurTimer(1);
+                        List<String> warns = (List<String>)cursor.one().get("Warns");
+                        Warn warn = new Warn(warns);
+                        AsheBot.users.findAndModify(query, AsheBot.convert(temp, warn));
+                        //System.out.println("Modified");
+                    }
+                },
+                60*1000*60*10
+        );
+    }
+    public boolean canRunCur(String memberID){
+        return getCurTimer(memberID) == 1;
+    }
+
 }
