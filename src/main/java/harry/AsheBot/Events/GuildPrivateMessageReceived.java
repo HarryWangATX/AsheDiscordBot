@@ -25,7 +25,7 @@ public class GuildPrivateMessageReceived extends ListenerAdapter {
                 else{
                     updateBal(event.getAuthor(), newB);
                     event.getChannel().sendMessage("Okay, your order has been processed. You now have: " + newB + " \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2 left").queue();
-                    event.getChannel().sendMessage("Fill out this form to get your role!\nhttps://forms.gle/YWJhfotc1RxghbcU8\nPlease give about 2 days for your role to be processed").queue();
+                    event.getChannel().sendMessage("Fill out this form to get your role!\nhttps://forms.gle/YWJhfotc1RxghbcU8\nMake sure you include your order id in the form or your order will not be processed.\nPlease give about 2 days for your role to be processed").queue();
                 }
             }
             else if(item == 2){
@@ -35,7 +35,7 @@ public class GuildPrivateMessageReceived extends ListenerAdapter {
                 }
                 else{
                     updateBal(event.getAuthor(), newB);
-                    event.getChannel().sendMessage("Okay, your order has been processed. You now have: " + newB + " \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2 \nmooN will send you fuzzy doggo pics very quickly").queue();
+                    event.getChannel().sendMessage("Okay, your order has been processed. You now have: " + newB + " \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2 \nDM mooN with your orderID and he will send you fuzzy doggo pictures soon!").queue();
                 }
             }
             else{
@@ -46,7 +46,7 @@ public class GuildPrivateMessageReceived extends ListenerAdapter {
                 else{
                     updateBal(event.getAuthor(), newB);
                     event.getChannel().sendMessage("Okay, your order has been processed. You now have: " + newB + " \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2").queue();
-                    event.getChannel().sendMessage("Fill out this form to get house!\nhttps://forms.gle/jYw5ehE1LzhSwRJD9").queue();
+                    event.getChannel().sendMessage("Fill out this form to get house!\nhttps://forms.gle/jYw5ehE1LzhSwRJD9\nMake sure you include your order id in the form or your order will not be processed.\n").queue();
                     event.getChannel().sendMessage("Please allow for up to 2 days for your house to be created!").queue();
                 }
             }

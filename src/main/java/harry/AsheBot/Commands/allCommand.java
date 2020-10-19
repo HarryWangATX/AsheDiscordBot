@@ -29,7 +29,7 @@ public class allCommand extends ListenerAdapter {
         //say command
         if(args[0].equalsIgnoreCase("~say")){
             event.getMessage().delete().complete();
-            System.out.println("hereeeee");
+            //System.out.println("hereeeee");
             String toSay = event.getMessage().getContentRaw().replace("~say", "");
 
             event.getChannel().sendMessage(toSay).queue();
@@ -50,59 +50,70 @@ public class allCommand extends ListenerAdapter {
         //end of info command
         //clear command
         if (args[0].equalsIgnoreCase(AsheBot.prefix + "clear")) {
-            if (args.length < 2) {
-                EmbedBuilder usage = new EmbedBuilder();
-                usage.setColor(0xff3923);
-                usage.setTitle("🔴 Command Usage");
-                usage.setDescription("~clear [# of messages]");
-                event.getChannel().sendTyping().queue();
-                event.getChannel().sendMessage(usage.build()).queue();
-            } else {
-                try {
-                    List<Message> messages = event.getChannel().getHistory().retrievePast(Integer.parseInt(args[1]) + 1).complete();
-                    event.getChannel().deleteMessages(messages).queue();
-                    EmbedBuilder success = new EmbedBuilder();
-                    success.setColor(0x22ff2a);
-                    success.setTitle("Successfully deleted " + args[1] + " messages.");
+            if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
+                if (args.length < 2) {
+                    EmbedBuilder usage = new EmbedBuilder();
+                    usage.setColor(0xff3923);
+                    usage.setTitle("🔴 Command Usage");
+                    usage.setDescription("~clear [# of messages]");
                     event.getChannel().sendTyping().queue();
-                    event.getChannel().sendMessage(success.build()).queue();
-                } catch (IllegalArgumentException e) {
-                    if (e.toString().startsWith("java.lang.IllegalArgumentException: Message retrieval")) {
-                        EmbedBuilder error = new EmbedBuilder();
-                        error.setColor(0xff3923);
-                        error.setTitle("🔴 Too Many Messages");
-                        error.setDescription("You can only delete 1 - 99 at a time");
+                    event.getChannel().sendMessage(usage.build()).queue();
+                } else {
+                    try {
+                        List<Message> messages = event.getChannel().getHistory().retrievePast(Integer.parseInt(args[1]) + 1).complete();
+                        event.getChannel().deleteMessages(messages).queue();
+                        EmbedBuilder success = new EmbedBuilder();
+                        success.setColor(0x22ff2a);
+                        success.setTitle("Successfully deleted " + args[1] + " messages.");
                         event.getChannel().sendTyping().queue();
-                        event.getChannel().sendMessage(error.build()).queue();
-                    } else {
-                        EmbedBuilder error = new EmbedBuilder();
-                        error.setColor(0xff3923);
-                        error.setTitle("🔴 Messages are too old");
-                        error.setDescription("Messages older than 2 weeks cannot be deleted");
-                        event.getChannel().sendTyping().queue();
-                        event.getChannel().sendMessage(error.build()).queue();
+                        event.getChannel().sendMessage(success.build()).queue();
+                    } catch (IllegalArgumentException e) {
+                        if (e.toString().startsWith("java.lang.IllegalArgumentException: Message retrieval")) {
+                            EmbedBuilder error = new EmbedBuilder();
+                            error.setColor(0xff3923);
+                            error.setTitle("🔴 Too Many Messages");
+                            error.setDescription("You can only delete 1 - 99 at a time");
+                            event.getChannel().sendTyping().queue();
+                            event.getChannel().sendMessage(error.build()).queue();
+                        } else {
+                            EmbedBuilder error = new EmbedBuilder();
+                            error.setColor(0xff3923);
+                            error.setTitle("🔴 Messages are too old");
+                            error.setDescription("Messages older than 2 weeks cannot be deleted");
+                            event.getChannel().sendTyping().queue();
+                            event.getChannel().sendMessage(error.build()).queue();
+                        }
                     }
                 }
-
             }
+            else{
+                event.getChannel().sendMessage("BRUH U DONT EVEN HAVE PERMS NOOOOOOOOOOOOOOOOOOOOOOOB").queue();
+            }
+
         }
         //end of clear command
         //unmute command
         if (args[0].equalsIgnoreCase("~unmute")) {
-            if (args.length < 2) {
-                event.getChannel().sendMessage("Enter the correct syntax. ~unmute + '@User'").queue();
-            } else {
-                Member member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
-                Role role = event.getGuild().getRoleById("707362535090814997");
-                assert member != null;
-                if (member.getRoles().contains(role)) {
-                    assert role != null;
-                    event.getGuild().removeRoleFromMember(member, role).complete();
-                    event.getChannel().sendMessage("Unmuted " + args[1] + ".").queue();
+            if(event.getMember().hasPermission(Permission.MANAGE_ROLES)){
+                if (args.length < 2) {
+                    event.getChannel().sendMessage("Enter the correct syntax. ~unmute + '@User'").queue();
                 } else {
-                    event.getChannel().sendMessage("Bruh, you can't unmute someone that is already unmuted. smh").queue();
+                    Member member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
+                    Role role = event.getGuild().getRoleById("707362535090814997");
+                    assert member != null;
+                    if (member.getRoles().contains(role)) {
+                        assert role != null;
+                        event.getGuild().removeRoleFromMember(member, role).complete();
+                        event.getChannel().sendMessage("Unmuted " + args[1] + ".").queue();
+                    } else {
+                        event.getChannel().sendMessage("Bruh, you can't unmute someone that is already unmuted. smh").queue();
+                    }
                 }
             }
+            else{
+                event.getChannel().sendMessage("BRUH U DONT HAVE PERMS!!").queue();
+            }
+
 
         }
         //end of unmute command

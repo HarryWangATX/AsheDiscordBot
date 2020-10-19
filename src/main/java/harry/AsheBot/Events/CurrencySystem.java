@@ -51,17 +51,17 @@ public class CurrencySystem extends ListenerAdapter {
             else{
                 int amount = Integer.parseInt(args[1]);
                 int xp = XPSystem.getXp(event.getMember());
-                if(amount*50 > xp){
+                if(amount*5 > xp){
                     event.getChannel().sendMessage("You don't have enough XP to transfer for " + amount + " \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2").queue();
                 }
                 else{
-                    int newXp = xp - amount*50;
+                    int newXp = xp - amount*5;
                     int newBal = getBal(event.getMember()) + amount;
                     updateBal(event.getMember(), newXp, newBal);
                     EmbedBuilder updated = new EmbedBuilder();
                     updated.setTitle("Transfer Accepted!");
                     updated.setThumbnail(event.getGuild().getIconUrl());
-                    updated.setDescription("Transferred Amount: " + "***" + (amount*50) + "*** XP for ***" + amount + "***\uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2");
+                    updated.setDescription("Transferred Amount: " + "***" + (amount*5) + "*** XP for ***" + amount + "***\uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2");
                     updated.setFooter("Success!", event.getAuthor().getAvatarUrl());
                     event.getChannel().sendMessage(updated.build()).queue();
                 }
@@ -71,9 +71,15 @@ public class CurrencySystem extends ListenerAdapter {
         //start of shop orders
         if(args[0].equalsIgnoreCase("~buy")){
             Member mooN = event.getGuild().getMemberById("581673853537746944");
+            String orderID = "";
+            for (int i = 0; i < 16; i++) {
+                int rand = (int)(Math.random() * 10);
+                orderID += rand + "";
+            }
             event.getChannel().sendMessage("Check Your DM!").queue();
-            mooN.getUser().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage(event.getMember().getUser().getName() + " has purchased a something! Check google forms!").queue());
-            event.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("What item are you buying? (Enter a number on the shop)").queue());
+            String finalOrderID = orderID;
+            mooN.getUser().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage(event.getMember().getUser().getName() + " has purchased a something! Check google forms! Order ID = " + finalOrderID).queue());
+            event.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("What item are you buying? (Enter a number on the shop) Your orderID is " + finalOrderID).queue());
         }
 
         if(args[0].equalsIgnoreCase("~give")){
@@ -83,7 +89,18 @@ public class CurrencySystem extends ListenerAdapter {
                 event.getChannel().sendMessage("YOU DONT HAVE ENOUGHT!").queue();
             }
             else{
-                //Member to = event.getGuild().getMemberById()
+                String otherID = "";
+                for (int i = 0; i < args[1].length(); i++) {
+                    char a = args[1].charAt(i);
+                    if(a >= '0' && a <= '9'){
+                        otherID += a + "";
+                    }
+                }
+                Member to = event.getGuild().getMemberById(otherID);
+                updateBal(to, XPSystem.getXp(to), getBal(to)+amount);
+                updateBal(event.getMember(), XPSystem.getXp(event.getMember()), getBal(event.getMember())-amount);
+
+                event.getChannel().sendMessage("Okay, you have given " + to.getEffectiveName() + " " + amount + "\uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2!").queue();
             }
         }
     }
