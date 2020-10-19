@@ -42,12 +42,13 @@ public class AsheBot {
         //DBObject query = new BasicDBObject("AFK", "hello");
         //users.findAndRemove(query);
         init();
-        jda = new JDABuilder(AccountType.BOT).setToken("TOKEN").build();
-        jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
+        jda = new JDABuilder(AccountType.BOT).setToken("BOT_TOKEN").build();
+        jda.getPresence().setStatus(OnlineStatus.ONLINE);
         jda.getPresence().setActivity(Activity.watching("Over Ashe"));
         jda.addEventListener(new allCommand());
         jda.addEventListener(new GuildMemberJoin());
         jda.addEventListener(new GuildMemberLeave());
+        jda.addEventListener(new GuildMessageReceive());
         jda.addEventListener(new GuildMessageReactionAdd());
         jda.addEventListener(new memberAFK());
         jda.addEventListener(new XPSystem());
@@ -58,7 +59,7 @@ public class AsheBot {
     }
 
     public static DBObject convert(User user, Warn warns){
-        return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID()).append("Timer", user.getTimer()).append("Bal", user.getBalance()).append("Warns", warns.getWarns());
+        return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID()).append("Timer", user.getTimer()).append("Bal", user.getBalance()).append("Warns", warns.getWarns()).append("curTimer", user.getCurTimer());
     }
     public static void addNew(String memberID){
         User newUser = new User();
@@ -68,6 +69,7 @@ public class AsheBot {
         newUser.setMemberID(memberID);
         newUser.setXp(0);
         newUser.setTimer(1);
+        newUser.setCurTimer(1);
         AsheBot.users.insert(AsheBot.convert(newUser, warn));
     }
     public static void init(){
@@ -78,16 +80,18 @@ public class AsheBot {
 //                users.findAndRemove(next);
 //                continue;
 //            }
-            System.out.println(next);
+
             Warn temp1 = new Warn((List<String >)next.get("Warns"));
             //Warn temp1 = new Warn(new ArrayList<>());
             User temp = new User();
             temp.setBalance((int)next.get("Bal"));
             temp.setTimer(1);
+            temp.setCurTimer(1);
             temp.setAfk((String)next.get("AFK"));
             temp.setXp((int)next.get("XP"));
             temp.setMemberID((String)next.get("memberID"));
             users.findAndModify(next, convert(temp, temp1));
+            System.out.println(next);
         }
     }
 }
