@@ -34,7 +34,7 @@ public class XPSystem extends ListenerAdapter {
 
         if(args[0].equalsIgnoreCase("~XP")){
             if(args.length == 1){
-                String xp = getXp(event.getMember())+"";
+                String xp = getXp(event.getMember().getId())+"";
                 EmbedBuilder xpInfo = new EmbedBuilder();
                 xpInfo.setColor(0x000000);
                 xpInfo.setTitle(event.getMember().getEffectiveName() + "'s XP in Ashe!");
@@ -44,16 +44,17 @@ public class XPSystem extends ListenerAdapter {
             }
             else if(args.length == 2){
                 Member member;
-                if(args[1].contains("!")){
-                    member = event.getGuild().getMemberById(args[1].replace("<@!", "").replace(">", ""));
+                StringBuilder id = new StringBuilder();
+                for (int i = 0; i < args[1].length(); i++) {
+                    char te = args[1].charAt(i);
+                    if(te >= '0' && te <= '9'){
+                        id.append(te);
+                    }
                 }
-                else if(args[1].contains("&")){
-                    member = event.getGuild().getMemberById(args[1].replace("<@&", "").replace(">", ""));
-                }
-                else{
-                    member = event.getGuild().getMemberById(args[1].replace("<@", "").replace(">", ""));
-                }
-                DBObject memQuery = new BasicDBObject("memberID", member.getId());
+
+                member = event.getGuild().getMemberById(id.toString());
+
+                DBObject memQuery = new BasicDBObject("memberID", id);
                 DBCursor cursor1 = AsheBot.users.find(memQuery);
                 if(cursor1.count() == 0){
                     EmbedBuilder noInfo = new EmbedBuilder();
@@ -63,7 +64,7 @@ public class XPSystem extends ListenerAdapter {
                     event.getChannel().sendMessage(noInfo.build()).queue();
                 }
                 else{
-                    String xp = getXp(member)+"";
+                    String xp = getXp(member.getId())+"";
                     EmbedBuilder xpInfo = new EmbedBuilder();
                     xpInfo.setColor(0x000000);
                     xpInfo.setTitle(member.getEffectiveName() + "'s XP in Ashe!");
@@ -76,8 +77,8 @@ public class XPSystem extends ListenerAdapter {
         }
     }
 
-    public static int getXp(Member member){
-        String id = member.getId();
+    public static int getXp(String member){
+        String id = member;
         DBObject query = new BasicDBObject("memberID", id);
         DBCursor cursor = AsheBot.users.find(query);
         return (int)cursor.one().get("XP");
@@ -146,6 +147,7 @@ public class XPSystem extends ListenerAdapter {
     }
 
     public boolean canGetXP(Member member){
+        System.out.println(member + " can");
         return getTimer(member.getId()) == 1;
     }
 //

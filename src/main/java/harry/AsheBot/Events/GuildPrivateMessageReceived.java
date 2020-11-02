@@ -18,8 +18,8 @@ public class GuildPrivateMessageReceived extends ListenerAdapter {
             int item = Integer.parseInt(args[0]);
             int bal = getBal(event.getAuthor());
             if(item == 1){
-                int newB = bal - 500;
-                if(bal < 500){
+                int newB = bal - 1699;
+                if(bal < 1699){
                     event.getChannel().sendMessage("Sigh, you don't have enough \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2").queue();
                 }
                 else{

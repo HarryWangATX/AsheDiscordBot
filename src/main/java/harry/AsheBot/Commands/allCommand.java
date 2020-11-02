@@ -18,7 +18,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.lang.reflect.Field;
 import java.text.Format;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class allCommand extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
@@ -27,7 +31,7 @@ public class allCommand extends ListenerAdapter {
         //System.out.println(Arrays.toString(args));
 
         //say command
-        if(args[0].equalsIgnoreCase("~say")){
+        if(args[0].equalsIgnoreCase("~say") && event.getMember().hasPermission(Permission.ADMINISTRATOR)){
             event.getMessage().delete().complete();
             //System.out.println("hereeeee");
             String toSay = event.getMessage().getContentRaw().replace("~say", "");
@@ -178,9 +182,10 @@ public class allCommand extends ListenerAdapter {
             }
         }
         //end of mute command
-        if(args[0].equalsIgnoreCase("~pingAce")){
-            for (int i = 0; i < 100; i++) {
-                event.getChannel().sendMessage("<@!715299047866368030>").queue();
+        if(args[0].equalsIgnoreCase("~pingEthan")){
+
+            for (int i = 0; i < 1000; i++) {
+                event.getChannel().sendMessage("<@!479696927651397652>").queue();
             }
             event.getChannel().sendMessage("Okay, ping is over").queue();
         }
@@ -234,7 +239,7 @@ public class allCommand extends ListenerAdapter {
             EmbedBuilder shop = new EmbedBuilder();
             shop.setTitle("Welcome To Ashe Shop!");
             shop.setThumbnail(event.getGuild().getIconUrl());
-            shop.setDescription("Item 1: **Special Role**\n\tCost: ***500 \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2***\nItem 2: **Fuzzy Doggo Pics**\n\tCost: ***6900 \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2***\nItem 3: **Private Channel**\n\tCost: ***696969 Ashii***\n\n\nTo Buy head over to Shop-Commands");
+            shop.setDescription("Item 1: **Special Role**\n\tCost: ***1699 \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2***\nItem 2: **Fuzzy Doggo Pics**\n\tCost: ***6900 \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2***\nItem 3: **Private Channel**\n\tCost: ***696969 Ashii***\n\n\nTo Buy head over to Shop-Commands");
             shop.setFooter("Get Grinding! Earn \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2 By Chatting! Use ~transfer to exchange your XP for \uD835\uDCD0\uD835\uDCFC\uD835\uDCF1\uD835\uDCF2\uD835\uDCF2!");
             event.getChannel().sendMessage(shop.build()).queue();
 
@@ -246,5 +251,9 @@ public class allCommand extends ListenerAdapter {
                 event.getChannel().sendMessage("GAB NITRO").queue();
             }
         }
+
+
+
+
     }
 }

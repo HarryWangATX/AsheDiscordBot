@@ -64,23 +64,23 @@ public class memberAFK extends ListenerAdapter {
             for (int i = 0; i < args.length; i++) {
                 String temp = args[i];
                 if(temp.contains("<@")){
-                    memberIds.add(temp.substring(temp.indexOf("<@"), temp.indexOf(">")));
+                    memberIds.add(temp.substring(temp.indexOf("<"), temp.indexOf(">")));
                 }
             }
             for (int i = 0; i < memberIds.size(); i++) {
                 //System.out.println(memberIds.get(i));
                 Member member;
-                if(memberIds.get(i).contains("!")){
-                    member = event.getGuild().getMemberById(memberIds.get(i).replace("<@!", "").replace(">", ""));
+                StringBuilder id = new StringBuilder();
+                for (int j = 0; j < memberIds.get(i).length(); j++) {
+                    char te = memberIds.get(i).charAt(j);
+                    if(te >= '0' && te <= '9'){
+                        id.append(te);
+                    }
                 }
-                else if(memberIds.get(i).contains("&")){
-                    member = event.getGuild().getMemberById(memberIds.get(i).replace("<@&", "").replace(">", ""));
-                }
-                else{
-                    member = event.getGuild().getMemberById(memberIds.get(i).replace("<@", "").replace(">", ""));
-                }
+
+                member = event.getGuild().getMemberById(id.toString());
                 //System.out.println(member.getAsMention());
-                DBObject query = new BasicDBObject("memberID", member.getId());
+                DBObject query = new BasicDBObject("memberID", id.toString());
                 DBCursor cursor = AsheBot.users.find(query);
                 if(cursor.count() > 0){
                     String afk = (String)cursor.one().get("AFK");
