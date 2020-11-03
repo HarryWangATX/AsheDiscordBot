@@ -1,6 +1,6 @@
 # AsheDiscordBot
 
-A bot made for ashe surviv/krunker/valorant discord server.
+A bot made for ashe discord server.
 
 ## Installation
 ### Reqs
