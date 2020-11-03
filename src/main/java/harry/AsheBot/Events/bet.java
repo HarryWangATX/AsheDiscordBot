@@ -105,7 +105,7 @@ public class bet extends ListenerAdapter {
 
         Timer temp = new Timer();
         temp.setBet(0);
-        temp.setGuess((int)cursor.one().get("quick"));
+        temp.setQuick((int)cursor.one().get("quick"));
         temp.setMemberID(memberID);
 
         AsheBot.timers.findAndModify(query, AsheBot.convertTimer(temp));
@@ -114,7 +114,7 @@ public class bet extends ListenerAdapter {
                 new java.util.TimerTask(){
                     public void run(){
 
-                        temp.setGuess((int)cursor.one().get("quick"));
+                        temp.setQuick((int)cursor.one().get("quick"));
                         temp.setBet(1);
 
                         AsheBot.timers.findAndModify(query, AsheBot.convertTimer(temp));

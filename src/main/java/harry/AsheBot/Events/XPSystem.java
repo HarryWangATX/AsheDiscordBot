@@ -26,7 +26,7 @@ public class XPSystem extends ListenerAdapter {
         if(cursor.count() == 0){
             AsheBot.addNew(event.getAuthor().getId());
         }
-        else if (canGetXP(event.getMember())){
+        else if (canGetXP(Objects.requireNonNull(event.getMember()))){
             assert event.getMember() != null;
             setXP(event.getMember());
             setTimer(event.getMember().getId());

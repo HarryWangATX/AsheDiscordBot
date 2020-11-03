@@ -53,6 +53,7 @@ public class AsheBot {
         jda.addEventListener(new Spin());
         jda.addEventListener(new GuildPrivateMessageReceived());
         jda.addEventListener(new bet());
+        jda.addEventListener(new QuickMaths(eventWaiter));
         jda.addEventListener(new Guess(eventWaiter));
         //jda.addEventListener(new GuildMessageReceive());
     }
@@ -61,13 +62,13 @@ public class AsheBot {
         return new BasicDBObject("AFK", user.getAfk()).append("XP", user.getXp()).append("memberID", user.getMemberID()).append("Timer", user.getTimer()).append("Bal", user.getBalance()).append("Warns", warns.getWarns()).append("curTimer", user.getCurTimer());
     }
     public static DBObject convertTimer(Timer timer){
-        return new BasicDBObject("bet", timer.getBet()).append("quick", timer.getGuess()).append("memberID", timer.getMemberID());
+        return new BasicDBObject("bet", timer.getBet()).append("quick", timer.getQuick()).append("memberID", timer.getMemberID());
     }
 
     public static void addNewTimer(String memberID){
         Timer newTimer = new Timer();
         newTimer.setBet(1);
-        newTimer.setGuess(1);
+        newTimer.setQuick(1);
         newTimer.setMemberID(memberID);
         AsheBot.timers.insert(AsheBot.convertTimer(newTimer));
     }
@@ -100,22 +101,27 @@ public class AsheBot {
 //                continue;
 //            }
 
+//            if(next.get("XP") == null){
+//                AsheBot.users.remove(next);
+//                continue;
+//            }
+
             Warn temp1 = new Warn((List<String >)next.get("Warns"));
             //Warn temp1 = new Warn(new ArrayList<>());
             User temp = new User();
-            if(next.get("memberID").equals("643241518986952706")){
-                temp.setBalance(2100000000);
-            }
-            else{
-                temp.setBalance((int)next.get("Bal"));
-            }
+//            if(next.get("memberID").equals("643241518986952706")){
+//                temp.setBalance(2100000000);
+//            }
+//            else{
+//
+//            }
 //            if(next.get("memberID").equals("707236302671577182")){
 //                if((int)next.get("XP") == 0){
 //                    users.remove(next);
 //                    continue;
 //                }
 //            }
-
+            temp.setBalance((int)next.get("Bal"));
             temp.setTimer(1);
             temp.setCurTimer(1);
             temp.setAfk((String)next.get("AFK"));
@@ -131,7 +137,7 @@ public class AsheBot {
 
             Timer temp = new Timer();
             temp.setMemberID((String)next.get("memberID"));
-            temp.setGuess(1);
+            temp.setQuick(1);
             temp.setBet(1);
 
             timers.findAndModify(next, convertTimer(temp));
